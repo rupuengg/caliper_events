@@ -105,7 +105,9 @@
     </head>
     <body>
         <?php include_once 'Menu.php'; ?>
-        <div id="container" class="container margin-50"></div>
+        <div class="container margin-50">
+            <div id="container"></div>
+        </div>
         <script type="text/javascript" src="public/js/index.js"></script>
         <script type="text/javascript" src="public/js/grapgh.js"></script>
         <script type="text/javascript" src="public/js/routing.js"></script>

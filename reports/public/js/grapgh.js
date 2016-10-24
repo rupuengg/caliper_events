@@ -1,5 +1,4 @@
 function showWeeklySessionOther(rawData) {
-    console.log(rawData.datas.data);
     $('#container').highcharts({
         chart: {
             type: 'line',
@@ -26,13 +25,13 @@ function showWeeklySessionOther(rawData) {
             title: {
                 text: rawData.vtitle
             },
-            plotLines: [{
-                    color: '#000000',
-                    width: 1,
-                    value: 14,
-                    dashStyle: 'longdashdot',
-                    zIndex: 100
-                }],
+//            plotLines: [{
+//                    color: '#000000',
+//                    width: 1,
+//                    value: 14,
+//                    dashStyle: 'longdashdot',
+//                    zIndex: 100
+//                }],
             min: 0,
             minTickInterval: 2,
             lineWidth: 1
@@ -44,6 +43,9 @@ function showWeeklySessionOther(rawData) {
                 },
                 enableMouseTracking: false
             }
+        },
+        credits: {
+            enabled: false
         },
         series: rawData.datas.data
     });
@@ -106,6 +108,9 @@ function showWeeklySession(rawData) {
 //                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
             pointFormat: '<b>{point.y:2f}</b> Logged-In<br/>'
         },
+        credits: {
+            enabled: false
+        },
         series: [{
                 name: 'Brands',
                 colorByPoint: true,
@@ -127,7 +132,41 @@ function showWeeklySession(rawData) {
 }
 
 function showWeeklyCourse(rawData) {
-    console.log(rawData.datas.data);
+    function plotLines(lineType) {
+        switch (lineType) {
+            case 'min':
+                var minVal = 0;
+                for (var d in rawData.datas.data) {
+                    var min = Math.min.apply(Math, rawData.datas.data[d].data.map(function (o) {
+                        return o == 0 ? Infinity : o;
+                    }));
+                    minVal += min;
+                }
+                return {
+                    color: '#000000',
+                    width: 1,
+                    value: (minVal / rawData.datas.data.length),
+                    dashStyle: 'longdashdot',
+                    zIndex: 100
+                };
+                break;
+            case 'max':
+                var maxVal = 0;
+                for (var d in rawData.datas.data) {
+                    var max = Math.max.apply(Math, rawData.datas.data[d].data);
+                    maxVal += max;
+                }
+                return {
+                    color: '#000000',
+                    width: 1,
+                    value: (maxVal / rawData.datas.data.length),
+                    dashStyle: 'longdashdot',
+                    zIndex: 100
+                };
+                break;
+        }
+    }
+
     $('#container').highcharts({
         chart: {
             type: 'line',
@@ -154,13 +193,7 @@ function showWeeklyCourse(rawData) {
             title: {
                 text: rawData.vtitle
             },
-            plotLines: [{
-                    color: '#000000',
-                    width: 1,
-                    value: 14,
-                    dashStyle: 'longdashdot',
-                    zIndex: 100
-                }],
+            plotLines: [plotLines('min'), plotLines('max')],
             lineWidth: 1
         },
         plotOptions: {
@@ -170,6 +203,9 @@ function showWeeklyCourse(rawData) {
                 },
                 enableMouseTracking: false
             }
+        },
+        credits: {
+            enabled: false
         },
         series: rawData.datas.data
     });
@@ -219,6 +255,9 @@ function showWeeklyBook(rawData) {
                 enableMouseTracking: false
             }
         },
+        credits: {
+            enabled: false
+        },
         series: rawData.datas.data
     });
 }
@@ -267,6 +306,9 @@ function showStudentActivity(rawData) {
                 },
                 enableMouseTracking: false
             }
+        },
+        credits: {
+            enabled: false
         },
         series: rawData.datas.data
     });
@@ -344,6 +386,9 @@ function showStudentSession(rawData) {
                 }
             }
         },
+        credits: {
+            enabled: false
+        },
         series: rawData.datas.data[fKey].datas
     });
 }
@@ -375,6 +420,32 @@ function pick_student(objthis) {
     fKey = objthis.value;
     console.log(fKey);
     drawGraphs('student-session', rawData);
+}
+
+function callAjaxForGraph(filter) {
+    $('#navbar a.'+filter).parent().addClass('active');
+    $('#navbar a.'+filter).parent().parent().parent().addClass('active');
+    $('#container').html('Loading...');
+    $('#dvUserDropdown').remove();
+    $.ajax({
+        url: 'graph/' + filter + '.php',
+        type: 'post',
+        dataType: 'json',
+        success: function (res) {
+            rawData = res;
+            if (filter == 'student-session') {
+                fKey = res.fKey;
+
+                $('.container.margin-50').prepend('<div id="dvUserDropdown" class="form-group col-lg-2 pull-right"></div>');
+                $('.container.margin-50 .form-group').append('<select id="student-select" name="user_id" onchange="pick_student(this);" class="form-control"></select>')
+                $.each(res.user_list, function (key, value) {
+                    $('.container.margin-50 .form-group select').append('<option value="' + key + '">' + value + '</option>')
+                });
+            }
+            drawGraphs(filter, res);
+        }
+    });
+    return false;
 }
 
 $(function () {
@@ -424,26 +495,3 @@ $(document).ready(function () {
 });
 var fKey = '';
 var rawData = '';
-function callAjaxForGraph(filter){
-    $('#container').html('Loading...');
-    $('#dvUserDropdown').remove();
-    $.ajax({
-        url: 'graph/' + filter + '.php',
-        type: 'post',
-        dataType: 'json',
-        success: function (res) {
-            rawData = res;
-            if(filter == 'student-session'){
-                fKey = res.fKey;
-
-                $('.container.margin-50').prepend('<div id="dvUserDropdown" class="form-group col-lg-2 pull-right"></div>');
-                $('.container.margin-50 .form-group').append('<select id="student-select" name="user_id" onchange="pick_student(this);" class="form-control"></select>')
-                $.each(res.user_list, function(key, value){
-                    $('.container.margin-50 .form-group select').append('<option value="'+key+'">'+value+'</option>')
-                });
-            }
-            drawGraphs(filter, res);
-        }
-    });
-    return false;
-}
