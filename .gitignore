@@ -15,6 +15,7 @@ doc/api
 .DS_Store
 *.swp
 tmp/
+nbproject/
 
 # wild
 todo.md
