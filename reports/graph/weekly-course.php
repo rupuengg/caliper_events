@@ -30,7 +30,7 @@ if (!empty($res['content'])) {
             $v = $val;
             foreach($weeks_res[0] as $kk=>$vv){
                 if(!isset($v['data'][$kk])){
-                    $v['data'][$kk]['y'] = '';
+                    $v['data'][$kk]['y'] = 0;
                 }
             }
             ksort($v['data']);
@@ -58,7 +58,6 @@ $ar = array('title' => 'Weekly Course Popularity',
     'datas' => array('cates' => array_values($weeks_cate),
         'data' => $result));
 
-//prePrint($result);
 echo json_encode($ar);
 exit;
 ?>

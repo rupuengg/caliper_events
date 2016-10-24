@@ -315,6 +315,20 @@ function showStudentActivity(rawData) {
 }
 
 function showStudentSession(rawData) {
+    function plotLines() {
+        var len = 0;
+        var sum = 0;
+        for (var d in rawData.datas.data[fKey].datas) {
+            if (len < rawData.datas.data[fKey].datas[d].data.length) {
+                len = rawData.datas.data[fKey].datas[d].data.length;
+            }
+            sum += rawData.datas.data[fKey].datas[d].data.reduce((a, b) => a + b, 0);
+        }
+        return sum / len;
+    }
+
+    var plotLineValue = plotLines();
+
     $('#container').highcharts({
         chart: {
             type: 'column',
@@ -339,7 +353,6 @@ function showStudentSession(rawData) {
         },
         yAxis: {
             min: 0,
-            max: 100,
             title: {
                 text: rawData.vtitle
             },
@@ -354,9 +367,13 @@ function showStudentSession(rawData) {
             plotLines: [{
                     color: '#000000',
                     width: 1,
-                    value: 40,
+                    value: plotLineValue,
                     dashStyle: 'longdashdot',
-                    zIndex: 100
+                    zIndex: 100,
+                    label: {
+                        text: 'Average : ' + plotLineValue,
+                        align: 'right'
+                    }
                 }],
             lineWidth: 1
         },
@@ -423,8 +440,8 @@ function pick_student(objthis) {
 }
 
 function callAjaxForGraph(filter) {
-    $('#navbar a.'+filter).parent().addClass('active');
-    $('#navbar a.'+filter).parent().parent().parent().addClass('active');
+    $('#navbar a.' + filter).parent().addClass('active');
+    $('#navbar a.' + filter).parent().parent().parent().addClass('active');
     $('#container').html('Loading...');
     $('#dvUserDropdown').remove();
     $.ajax({
@@ -440,6 +457,14 @@ function callAjaxForGraph(filter) {
                 $('.container.margin-50 .form-group').append('<select id="student-select" name="user_id" onchange="pick_student(this);" class="form-control"></select>')
                 $.each(res.user_list, function (key, value) {
                     $('.container.margin-50 .form-group select').append('<option value="' + key + '">' + value + '</option>')
+                });
+            } else if (filter == 'student-activity') {
+                fKey = res.fKey;
+
+                $('.container.margin-50').prepend('<div id="dvUserDropdown" class="form-group col-lg-3 pull-right"></div>');
+                $('.container.margin-50 .form-group').append('<ul id="student-select" class=""></ul>')
+                $.each(res.legends, function (key, value) {
+                    $('.container.margin-50 .form-group ul').append('<li>' + value + '</li>')
                 });
             }
             drawGraphs(filter, res);
