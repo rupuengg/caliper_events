@@ -39,14 +39,7 @@ if (!empty($res['content'])) {
         'htitle' => 'Weeks',
         'datas' => $resp);
     
+    prePrint($ar);
     echo json_encode($ar);
     exit;
 }
-?>
-<script type="text/javascript">
-    var rawData = JSON.parse('<?php echo json_encode($ar); ?>');
-    $(document).ready(function () {
-        drawGraphs('weekly-session', rawData);
-    });
-</script>
-<script type="text/javascript" src="graphjs/grapgh.js"></script>

@@ -9,6 +9,7 @@
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
         <meta name="description" content="">
         <meta name="author" content="">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <link rel="icon" href="../../favicon.ico">
 
         <title>QA - Stack Event</title>
@@ -32,6 +33,7 @@
         <![endif]-->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
         <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.8.0/jquery.modal.js" type="text/javascript" charset="utf-8"></script>
         <style>
             a.logo{margin:0 15px 0 0; padding:0}
             a.logo img{ height:50px}
@@ -107,6 +109,16 @@
         <?php include_once 'Menu.php'; ?>
         <div class="container margin-50">
             <div id="container"></div>
+        </div>
+        <a class="js-open-modal btn" href="javascript:;" data-modal-id="popup" style="display:none;"> Pop Up One</a>
+        <div id="popup" class="modal-box">
+            <header>
+                <a href="javascript:;" class="js-modal-close close">×</a>
+                <h3>Event JSON</h3>
+            </header>
+            <div class="modal-body">
+                <p>Modal Body</p>
+            </div>
         </div>
         <script type="text/javascript" src="public/js/index.js"></script>
         <script type="text/javascript" src="public/js/grapgh.js"></script>

@@ -23,6 +23,7 @@ if (!isset($page)) {
 <!--                        <li style="width:100%;"><a class="book-view" href="javascript:;" onclick="navigate('/book-view')">Weekly Book Popularity</a></li>-->
                         <li style="width:100%;"><a class="student-activity" href="javascript:;" onclick="navigate('/student-activity')">Student Activity Weekly Trend</a></li>
                         <li style="width:100%;"><a class="student-session" href="javascript:;" onclick="navigate('/student-session')">Student Session Duration(Daily Report)</a></li>
+                        <li style="width:100%;"><a class="question-complexity" href="javascript:;" onclick="navigate('/question-complexity')">Question Complexity Per Quiz</a></li>
                     </ul> 
                 </li>
             </ul>

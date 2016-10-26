@@ -5,7 +5,7 @@ var routing = function (mode) {
         '/home': function () {
             $('#navbar a.home').parent().addClass('active');
             $(document).ready(function () {
-                var html = '<table id="datatbl" class="display" cellspacing="0" width="100%"><thead><tr><th>Profile</th><th>Action</th><th>Actor</th><th>Time</th><th>Action</th></tr></thead></table><a class="js-open-modal btn" href="javascript:;" data-modal-id="popup" style="display:none;"> Pop Up One</a></div></div><div id="popup" class="modal-box">  <header><a href="#" class="js-modal-close close">×</a><h3>Event JSON</h3></header><div class="modal-body"><p>Modal Body</p>';
+                var html = '<table id="datatbl" class="display" cellspacing="0" width="100%"><thead><tr><th>Metric Profile</th><th>Action</th><th>Actor</th><th>Time</th><th>&nbsp;</th></tr></thead></table>';
                 $('#container').html(html);
                 $('#datatbl').DataTable({
                     "ajax": {
@@ -19,6 +19,12 @@ var routing = function (mode) {
                         {"data": "full"}
                     ],
                     "order": [[3, "asc"]],
+                    aoColumnDefs: [
+                        {
+                            bSortable: false,
+                            aTargets: [ -1 ]
+                        }
+                    ],
                     "ordering": true,
                     "searching": false,
                     "bProcessing": true,
@@ -35,6 +41,9 @@ var routing = function (mode) {
         'weekly-session-other': function () {
             callAjaxForGraph('weekly-session-other');
         },
+        'weekly-session': function () {
+            callAjaxForGraph('weekly-session');
+        },
         'weekly-course': function () {
             callAjaxForGraph('weekly-course');
         },
@@ -46,6 +55,9 @@ var routing = function (mode) {
         },
         'student-session': function(){
             callAjaxForGraph('student-session');
+        },
+        'question-complexity': function(){
+            callAjaxForGraph('question-complexity');
         },
         'this/*/:language/:what': function (params) {
             var id = 'parameterized';

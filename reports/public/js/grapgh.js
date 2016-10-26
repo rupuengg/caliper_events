@@ -142,12 +142,20 @@ function showWeeklyCourse(rawData) {
                     }));
                     minVal += min;
                 }
+                var avg = minVal / rawData.datas.data.length;
                 return {
-                    color: '#000000',
-                    width: 1,
-                    value: (minVal / rawData.datas.data.length),
+                    color: '#bf0000',
+                    width: 2,
+                    value: avg,
                     dashStyle: 'longdashdot',
-                    zIndex: 100
+                    zIndex: 100,
+                    label: {
+                        text: 'Lowest average : ' + avg,
+                        align: 'right',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    }
                 };
                 break;
             case 'max':
@@ -156,12 +164,20 @@ function showWeeklyCourse(rawData) {
                     var max = Math.max.apply(Math, rawData.datas.data[d].data);
                     maxVal += max;
                 }
+                var avg = maxVal / rawData.datas.data.length;
                 return {
                     color: '#000000',
-                    width: 1,
-                    value: (maxVal / rawData.datas.data.length),
+                    width: 2,
+                    value: avg,
                     dashStyle: 'longdashdot',
-                    zIndex: 100
+                    zIndex: 100,
+                    label: {
+                        text: 'Highest average : ' + avg,
+                        align: 'right',
+                        style: {
+                            fontWeight: 'bold'
+                        }
+                    }
                 };
                 break;
         }
@@ -263,6 +279,7 @@ function showWeeklyBook(rawData) {
 }
 
 function showStudentActivity(rawData) {
+    console.log('Hello');
     $('#container').highcharts({
         chart: {
             type: 'line',
@@ -272,7 +289,7 @@ function showStudentActivity(rawData) {
             text: rawData.title
         },
         xAxis: {
-            categories: rawData.datas.cates,
+            categories: rawData.datas[fKey].cates,
             labels: {
                 rotation: -45,
                 style: {
@@ -289,13 +306,13 @@ function showStudentActivity(rawData) {
             title: {
                 text: rawData.vtitle
             },
-            plotLines: [{
-                    color: '#000000',
-                    width: 1,
-                    value: 25,
-                    dashStyle: 'longdashdot',
-                    zIndex: 100
-                }],
+//            plotLines: [{
+//                    color: '#000000',
+//                    width: 1,
+//                    value: 25,
+//                    dashStyle: 'longdashdot',
+//                    zIndex: 100
+//                }],
 //            minTickInterval: 10,
             lineWidth: 1
         },
@@ -310,7 +327,7 @@ function showStudentActivity(rawData) {
         credits: {
             enabled: false
         },
-        series: rawData.datas.data
+        series: rawData.datas[fKey].dt
     });
 }
 
@@ -324,7 +341,7 @@ function showStudentSession(rawData) {
             }
             sum += rawData.datas.data[fKey].datas[d].data.reduce((a, b) => a + b, 0);
         }
-        return sum / len;
+        return (sum / len).toFixed(2);
     }
 
     var plotLineValue = plotLines();
@@ -372,7 +389,10 @@ function showStudentSession(rawData) {
                     zIndex: 100,
                     label: {
                         text: 'Average : ' + plotLineValue,
-                        align: 'right'
+                        align: 'right',
+                        style: {
+                            fontWeight: 'bold'
+                        }
                     }
                 }],
             lineWidth: 1
@@ -410,6 +430,87 @@ function showStudentSession(rawData) {
     });
 }
 
+function showQuestionComplexity(rawData) {
+    $('#container').highcharts({
+        chart: {
+            type: 'column',
+            height: 550
+        },
+        title: {
+            text: rawData.title
+        },
+        xAxis: {
+            type: 'category',
+            title: {
+                text: rawData.htitle
+            },
+            labels: {
+                rotation: -45,
+                style: {
+                    fontSize: '11px',
+                    fontFamily: 'Verdana, sans-serif',
+                    textOverflow: 'none'
+                }
+            }
+        },
+        yAxis: {
+            title: {
+                useHTML: true,
+                text: rawData.vtitle + ' <span style="font-size:20px;font-weight:bold;">&#8594;</span>'
+            },
+            min: 0,
+            stackLabels: {
+                enabled: true
+            },
+            minTickInterval: .5,
+            plotLines: [{
+                    color: '#000000',
+                    width: 1,
+                    value: 5,
+                    dashStyle: 'longdashdot',
+                    zIndex: 100
+                }],
+            lineWidth: 1
+        },
+        legend: {
+            enabled: false
+        },
+        plotOptions: {
+            series: {
+                borderWidth: 0,
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.y:.1f}'
+                }
+            }
+        },
+        tooltip: {
+//                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+            pointFormat: '<b>{point.y:2f}</b><br/>'
+        },
+        credits: {
+            enabled: false
+        },
+        series: [{
+                name: 'Brands',
+                colorByPoint: true,
+                data: rawData.datas[fKey].dt,
+                dataLabels: {
+                    enabled: true,
+//                    rotation: -90,
+                    color: '#FFFFFF',
+//                    align: 'right',
+                    format: '{point.y:1f}',
+//                    y: 10,
+                    style: {
+                        fontSize: '11px',
+                        fontFamily: 'Verdana, sans-serif'
+                    }
+                }
+            }]
+    });
+}
+
 function drawGraphs(type, rawData) {
     switch (type) {
         case 'weekly-session-other':
@@ -430,22 +531,27 @@ function drawGraphs(type, rawData) {
         case 'student-session':
             showStudentSession(rawData);
             break;
+        case 'question-complexity':
+            showQuestionComplexity(rawData);
+            break;
     }
 }
 
 function pick_student(objthis) {
     fKey = objthis.value;
-    console.log(fKey);
-    drawGraphs('student-session', rawData);
+    
+    drawGraphs(filter, rawData);
 }
 
-function callAjaxForGraph(filter) {
-    $('#navbar a.' + filter).parent().addClass('active');
-    $('#navbar a.' + filter).parent().parent().parent().addClass('active');
+function callAjaxForGraph(flt) {
+    filter = flt;
+    $('#navbar a.' + flt).parent().addClass('active');
+    $('#navbar a.' + flt).parent().parent().parent().addClass('active');
+    $('#navbar a.' + flt).parent().parent().parent().find('a:eq(0)').html($('#navbar a.' + flt).text());
     $('#container').html('Loading...');
     $('#dvUserDropdown').remove();
     $.ajax({
-        url: 'graph/' + filter + '.php',
+        url: 'graph/' + flt + '.php',
         type: 'post',
         dataType: 'json',
         success: function (res) {
@@ -458,16 +564,24 @@ function callAjaxForGraph(filter) {
                 $.each(res.user_list, function (key, value) {
                     $('.container.margin-50 .form-group select').append('<option value="' + key + '">' + value + '</option>')
                 });
-            } else if (filter == 'student-activity') {
+            } else if (flt == 'student-activity') {
                 fKey = res.fKey;
 
-                $('.container.margin-50').prepend('<div id="dvUserDropdown" class="form-group col-lg-3 pull-right"></div>');
-                $('.container.margin-50 .form-group').append('<ul id="student-select" class=""></ul>')
-                $.each(res.legends, function (key, value) {
-                    $('.container.margin-50 .form-group ul').append('<li>' + value + '</li>')
+                $('.container.margin-50').prepend('<div id="dvUserDropdown" class="form-group col-lg-2 pull-right"></div>');
+                $('.container.margin-50 .form-group').append('<select id="student-select" name="user_id" onchange="pick_student(this);" class="form-control"></select>')
+                $.each(res.datas, function (key, value) {
+                    $('.container.margin-50 .form-group select').append('<option value="' + key + '">' + value.name + '</option>')
+                });
+            } else if (flt == 'question-complexity') {
+                fKey = res.fKey;
+
+                $('.container.margin-50').prepend('<div id="dvUserDropdown" class="form-group col-lg-2 pull-right"></div>');
+                $('.container.margin-50 .form-group').append('<select id="student-select" name="user_id" onchange="pick_student(this);" class="form-control"></select>')
+                $.each(res.datas, function (key, value) {
+                    $('.container.margin-50 .form-group select').append('<option value="' + key + '">' + value.name + '</option>')
                 });
             }
-            drawGraphs(filter, res);
+            drawGraphs(flt, res);
         }
     });
     return false;

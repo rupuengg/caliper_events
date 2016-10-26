@@ -26,7 +26,7 @@ if(!empty($_REQUEST['columns'][$_REQUEST['order'][0]['column']]['data']) && $dra
 $d = !empty($_REQUEST['order'][0]['dir']) ? $_REQUEST['order'][0]['dir'] : 'asc';
 
 $start = isset($_REQUEST['start']) ? $_REQUEST['start'] : 1;
-$limit = 10;
+$limit = isset($_REQUEST['length']) ? $_REQUEST['length'] : 10;
 
 $event = new Events($start, $limit, '', $c, $d);
 $res = $event->makeCurl();
@@ -38,12 +38,12 @@ $all_events = array('data' => array(),
 
 if ($res) {
     foreach ($res['content'] as $key => $value) {
-        $a = array('profile' => end(explode('/', $value['event']['@type'])),
+        $a = array('profile' => str_replace('Event', '', end(explode('/', $value['event']['@type']))),
             'action' => end(explode('#', $value['event']['action'])),
             'actor' => $value['event']['actor']['name'] . ' (' . end(explode('/', $value['event']['actor']['@id'])) . ')',
             'event_time' => date("Y-m-d H:i:s", str_replace('000', '', $value['event']['eventTime'])),
             'full' => "<textarea style='display:none;'>" . json_encode($value) . "</textarea>"
-            . "<a class='js-open-modal other' href='javascript:;' data-modal-id='popup1'>View JSON</a>");
+            . "<a class='js-open-modal other' href='javascript:;' data-modal-id='popup'>View JSON-LD</a>");
         array_push($all_events['data'], $a);
     }
     echo json_encode($all_events);

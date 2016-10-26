@@ -14,7 +14,7 @@ if (!empty($res['content'])) {
         $course_id = end(explode('/', $value['event']['group']['@id']));
 
         $range = getStartAndEndDate($week, date('Y', strtotime($ddate)));
-        $name = date('d M', strtotime($range[0]))." - ".date('d M`y', strtotime($range[1]));
+        $name = date('d M', strtotime($range[0])) . " - " . date('d M`y', strtotime($range[1]));
 
         $weeks_res[0][$week] = $name;
         if (isset($weeks_res[$course_id]['data'][$week]['y'])) {
@@ -26,33 +26,41 @@ if (!empty($res['content'])) {
     }
     
     foreach ($weeks_res as $k => $val) {
-        if($k != 0){
+        if ($k != 0) {
             $v = $val;
-            foreach($weeks_res[0] as $kk=>$vv){
-                if(!isset($v['data'][$kk])){
-                    $v['data'][$kk]['y'] = 0;
+            $chk = false;
+            ksort($weeks_res[0]);
+            foreach ($weeks_res[0] as $kk => $vv) {
+                if (isset($v['data'][$kk])) {
+                    $chk = true;
+                }
+                if (!isset($v['data'][$kk])) {
+//                    if ($chk)
+//                        $v['data'][$kk]['y'] = 0;
+//                    else
+                        $v['data'][$kk]['y'] = '';
                 }
             }
             ksort($v['data']);
             $weeks_res[$k] = $v;
         }
     }
-    
+
     $weeks_cate = $weeks_res[0];
     ksort($weeks_cate);
-    
+
     $result = $weeks_res;
-    
+
     foreach ($result as $k => $val) {
-        if($k != 0){
+        if ($k != 0) {
             $result[$k]['data'] = array_column($val['data'], 'y');
         }
     }
     unset($result[0]);
     $result = array_values($result);
 }
-    
-$ar = array('title' => 'Weekly Course Popularity',
+
+$ar = array('title' => 'Weekly Courses Popularity',
     'vtitle' => 'Course Views',
     'htitle' => 'Weeks',
     'datas' => array('cates' => array_values($weeks_cate),
@@ -60,11 +68,3 @@ $ar = array('title' => 'Weekly Course Popularity',
 
 echo json_encode($ar);
 exit;
-?>
-<script type="text/javascript">
-    var rawData = JSON.parse('<?php echo json_encode($ar); ?>');
-    $(document).ready(function () {
-        drawGraphs('weekly-course', rawData);
-    });
-</script>
-<script type="text/javascript" src="graphjs/grapgh.js"></script>

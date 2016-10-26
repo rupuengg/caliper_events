@@ -67,7 +67,7 @@ if (!empty($res['content'])) {
     }
     $new_result['data'] = $data;
 
-    $ar = array('title' => 'Student Weekly Logged-In Session Report',
+    $ar = array('title' => 'Students Weekly Logged-in Session Report',
         'vtitle' => 'Logged-In Count',
         'htitle' => 'Weeks',
         'datas' => $new_result);
@@ -75,11 +75,3 @@ if (!empty($res['content'])) {
     echo json_encode($ar);
     exit;
 }
-?>
-<script type="text/javascript">
-    var rawData = JSON.parse('<?php echo json_encode($ar); ?>');
-    $(document).ready(function () {
-        drawGraphs('weekly-session-other', rawData);
-    });
-</script>
-<script type="text/javascript" src="graphjs/grapgh.js"></script>
